@@ -8,7 +8,7 @@ OBJS = \
   $(SRC)/library/macserver.o \
   $(SRC)/library/macroute.o \
   $(SRC)/library/utils.o \
-  $(SRC)/server/server.o
+  $(SRC)/sample/server.o
 
 %.o: %.c $(DEPS)
 	echo "Comp $< ...."
