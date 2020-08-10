@@ -8,30 +8,47 @@ extern "C" {
 #include "macroute.hpp"
 
 
-// ====================================================================================================================
+// ============================================================================
 
-
-MacRoute::MacRoute(MacRequestType requestType, const char* uri) {
+MacRoute::MacRoute(MacRequestType requestType, char* path) {
     this->requestType = requestType;
-    this->uri = uri;
+    this->path = path;
 }
 
-void MacRoute::handle(struct mg_connection *nc) {
+MacRequestType MacRoute::getRequestType() {
+    return this->requestType;
+}
+
+char* MacRoute::getQueryString() {       
+      const char* query_string = http_message->query_string.p;
+}
+
+char* MacRoute::getPath(){
+    return this->path;
+}
+
+void MacRoute::handle(struct mg_connection *nc, struct http_message *hm) {
   this->connection = nc;
+  this->http_message = hm;
   this->treat();
   this->connection = NULL;
+  this->http_message = NULL;
+}
+
+char* MacRoute::getHeaderValue(const char* header_key) {
+   struct mg_str *header_value = mg_get_http_header(this->http_message, header_key);
+   return strdup(header_value->p);
 }
 
 void MacRoute::treat() {
-    responseNotImplemented();
+    responseTextError(400, "nothing found!");
 }
 
-void MacRoute::responseNotFound() {
-   mg_printf(this->connection, "%s", "HTTP/1.0 404 Not Found\r\nContent-Length: 0\r\n\r\n");
-   mg_send_http_chunk(this->connection, "", 0); 
+void MacRoute::responseTextError(int statusCode, char* message) {
+   mg_http_send_error(this->connection, statusCode, message);
 }
 
-void MacRoute::responseNotImplemented() {
-   mg_printf(this->connection, "%s", "HTTP/1.0 501 Not Implemented\r\nContent-Length: 0\r\n\r\n");
-   mg_send_http_chunk(this->connection, "", 0); 
+void MacRoute::responseText(int statusCode, char *text) {
+   mg_send_head(this->connection, statusCode, strlen(text), "Content-Type: text/plain");
+   mg_printf(this->connection, "%.*s", (int)strlen(text), text);
 }

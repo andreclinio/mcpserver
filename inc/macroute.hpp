@@ -7,18 +7,26 @@
 class MacRoute {
 
   struct mg_connection *connection;
+  struct http_message *http_message;
 
   MacRequestType requestType;
-  const char* uri;
+  char* path;
 
 protected:
-  void responseNotFound();
-  void responseNotImplemented();
+  void responseTextError(int statusCode, char *text);
+  void responseText(int statusCode, char *text);
+  
+  char* getQueryString();
+  char* getHeaderValue(const char* paramName);
+
 
 public:
 
-  MacRoute(MacRequestType requestType, const char* uri);
-  void handle(struct mg_connection *nc);
+  MacRequestType getRequestType();
+  char* getPath();
+
+  MacRoute(MacRequestType requestType, char* path);
+  void handle(struct mg_connection *nc, struct http_message *hm);
   
   virtual void treat();
 

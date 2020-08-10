@@ -12,14 +12,16 @@ extern "C" {
 #include "macserver.hpp"
 
 
-// ====================================================================================================================
+// ============================================================================
 
 void ev_handler(struct mg_connection *nc, int ev, void *ev_data) {
     if (ev != MG_EV_HTTP_REQUEST) {
         return;
     }
+
     MacServer* server = MacServer::getInstance();
     const char* path_prefix = server->getPathPrefix();
+
     struct http_message *hm = (struct http_message *)ev_data;
     static const struct mg_str api_prefix = MG_MK_STR(path_prefix);
     cout << ">> URI: " << hm->uri.p << endl;
@@ -36,14 +38,13 @@ void ev_handler(struct mg_connection *nc, int ev, void *ev_data) {
     const MacRequestType requestType = get_request_type(hm);
     cout << ">> Request type: " << requestType << endl;
 
-    const bool handled = server->handleEvent(nc, requestType, hm->uri.p);
+    const bool handled = server->handleEvent(nc, hm, requestType, hm->uri.p);
     if (handled) {
         cout << ">> Request handled!" << endl;
     }
     else {
         printf(">> Request not handled!");
-        mg_printf(nc, "%s", "HTTP/1.0 404 Not Found\r\nContent-Length: 0\r\n\r\n");
-        mg_send_http_chunk(nc, "", 0); 
+        mg_http_send_error(nc, 404, "No route found in MacServer!\r\n");
     }
 }
 
@@ -82,17 +83,39 @@ const char* MacServer::getPathPrefix() {
 }
 
 MacRoute* MacServer::findRoute(MacRequestType requestType, const char* uri) {
+    size_t found = string(uri).find(' ');
+    string path;
+    if (found < 0) path = string(uri);
+    path = string(uri).substr(0, found);
+
+    // cout << "rt: " << requestType << " find: " << path << endl;
+    list <MacRoute*> ::iterator it;
+    for (it = routes.begin(); it != routes.end(); ++it) {
+        MacRoute *r = *it;
+        string rPath = string(getPathPrefix()) + "/" + string(r->getPath());
+        const MacRequestType routeRequestType = r->getRequestType();
+        // cout << "rt: " << routeRequestType << " rota: " << rPath << endl;
+        if (routeRequestType == requestType && rPath.compare(path) == 0) {
+            // cout << "atendida!" << endl;
+            return r;
+        }
+    }
     return NULL;
 }
 
-bool MacServer::handleEvent(struct mg_connection *nc, MacRequestType requestType, const char* uri) {
-    MacRoute* route = findRoute(requestType, uri);
+void MacServer::addRoute(MacRoute *route) {
+    this->routes.push_front(route);
+}
+
+
+bool MacServer::handleEvent(struct mg_connection *nc, struct http_message *hm, MacRequestType requestType, const char* uri) {
+    MacRoute* route = findRoute(requestType, hm->uri.p);
     if (route == NULL) return false;
     try {
-        route->handle(nc);
+        route->handle(nc, hm);
     }
     catch (const char* msg) {
-        mg_printf(nc, "%s", "HTTP/1.0 500 Internal Server Error\r\nContent-Length: 0\r\n\r\n");
+        mg_http_send_error(nc, 500, msg);
     }
     return true;
 }
