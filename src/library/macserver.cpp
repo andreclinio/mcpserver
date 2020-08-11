@@ -1,11 +1,9 @@
 
-#include <iostream>
-using namespace std;
-
 
 extern "C" {
     #include "mongoose.h"
 }
+
 #include "utils.hpp"
 #include "macrequesttype.hpp"
 #include "macroute.hpp"
@@ -18,32 +16,23 @@ void ev_handler(struct mg_connection *nc, int ev, void *ev_data) {
     if (ev != MG_EV_HTTP_REQUEST) {
         return;
     }
-
     MacServer* server = MacServer::getInstance();
-    const char* path_prefix = server->getPathPrefix();
-
+    std::string path_prefix = server->getPathPrefix();
     struct http_message *hm = (struct http_message *)ev_data;
-    static const struct mg_str api_prefix = MG_MK_STR(path_prefix);
-    cout << ">> URI: " << hm->uri.p << endl;
-    cout << ">> Path Prefix: " << path_prefix << endl;
-
-    if (!has_prefix(&hm->uri, &api_prefix)) {
-        cout << ">> Bad Path Prefix: " << endl;
+    std::string uri = utils_mg_str_to_string(hm->uri);
+    server->log("URI: " + uri);
+    if (uri.rfind(path_prefix, 0) != 0) {
+        server->log("Bad URL path prefix: " + uri + " for server starting at: " + path_prefix);
         return;
     }
 
-    struct mg_str key;
-    key.p = hm->uri.p + api_prefix.len;
-    key.len = hm->uri.len - api_prefix.len;
-    const MacRequestType requestType = get_request_type(hm);
-    cout << ">> Request type: " << requestType << endl;
-
+    const MacRequestType requestType = utils_get_request_type(hm);
     const bool handled = server->handleEvent(nc, hm, requestType, hm->uri.p);
     if (handled) {
-        cout << ">> Request handled!" << endl;
+        server->log("Request handled!");
     }
     else {
-        printf(">> Request not handled!");
+        server->log("Request not handled!");
         mg_http_send_error(nc, 404, "No route found in MacServer!\r\n");
     }
 }
@@ -59,6 +48,11 @@ MacServer* MacServer::getInstance() {
     return instance;
 }
 
+void MacServer::log(std::string text) {
+    std::cout << "[" << utils_now() << "] - " << text << std::endl;
+}
+
+
 // ====================================================================================================================
 
 MacServer::MacServer() {
@@ -66,7 +60,7 @@ MacServer::MacServer() {
     this->path_prefix = "/";
 }
 
-void MacServer::setPathPrefix(const char* prefix) {
+void MacServer::setPathPrefix(std::string prefix) {
     this->path_prefix = prefix;
 }
 
@@ -78,25 +72,22 @@ int MacServer::getHttpPort() {
     return this->http_port;
 }
 
-const char* MacServer::getPathPrefix() {
+std::string MacServer::getPathPrefix() {
     return this->path_prefix;
 }
 
 MacRoute* MacServer::findRoute(MacRequestType requestType, const char* uri) {
-    size_t found = string(uri).find(' ');
-    string path;
-    if (found < 0) path = string(uri);
-    path = string(uri).substr(0, found);
+    size_t found_spc = std::string(uri).find(' ');
+    std::string path = (found_spc < 0) ? std::string(uri) : std::string(uri).substr(0, found_spc);
+    size_t found_qst = std::string(path).find('?');
+    std::string prefix = (found_qst < 0) ? std::string(path) : std::string(path).substr(0, found_qst);
 
-    // cout << "rt: " << requestType << " find: " << path << endl;
-    list <MacRoute*> ::iterator it;
+    std::list <MacRoute*> ::iterator it;
     for (it = routes.begin(); it != routes.end(); ++it) {
         MacRoute *r = *it;
-        string rPath = string(getPathPrefix()) + "/" + string(r->getPath());
-        const MacRequestType routeRequestType = r->getRequestType();
-        // cout << "rt: " << routeRequestType << " rota: " << rPath << endl;
-        if (routeRequestType == requestType && rPath.compare(path) == 0) {
-            // cout << "atendida!" << endl;
+        std::string rPath = std::string(getPathPrefix()) + "/" + std::string(r->getPath());
+        const MacRequestType rReqType = r->getRequestType();
+        if (rReqType == requestType && rPath.compare(prefix) == 0) {
             return r;
         }
     }
@@ -107,21 +98,27 @@ void MacServer::addRoute(MacRoute *route) {
     this->routes.push_front(route);
 }
 
-
 bool MacServer::handleEvent(struct mg_connection *nc, struct http_message *hm, MacRequestType requestType, const char* uri) {
     MacRoute* route = findRoute(requestType, hm->uri.p);
-    if (route == NULL) return false;
+    if (route == NULL) {
+        return false;
+    }
+    log("route name: " + route->getName());
     try {
         route->handle(nc, hm);
     }
     catch (const char* msg) {
+        log(std::string(msg));
         mg_http_send_error(nc, 500, msg);
     }
     return true;
 }
 
 void MacServer::start() {
-    printf("Starting web server on port %d :: %s\n", http_port, path_prefix);
+    std::stringstream intro;
+    intro << "Starting web server on port " << http_port << " path: " << path_prefix;
+    log(intro.str());
+
 
     static char* s_http_port = (char*)malloc(20);
     sprintf(s_http_port, "%d", http_port);

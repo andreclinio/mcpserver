@@ -3,8 +3,10 @@
 #ifndef MAC_MACSERVER_H_
 #define MAC_MACSERVER_H_
 
+#include <string>
 #include <list> 
-using namespace std; 
+#include <iostream>
+#include <sstream>
 
 #include "macrequesttype.hpp"
 #include "macroute.hpp"
@@ -14,10 +16,10 @@ class MacServer {
 
   private:
 
-    list<MacRoute*> routes;
+    std::list<MacRoute*> routes;
 
     int http_port;
-    const char* path_prefix;
+    std::string path_prefix;
 
     MacRoute* findRoute(const MacRequestType requestType, char const *uri);
 
@@ -35,8 +37,11 @@ class MacServer {
 
     int getHttpPort();
     void setHttpPort(int port);
-    const char* getPathPrefix();
-    void setPathPrefix(const char *path_prefix);
+
+    std::string getPathPrefix();
+    void setPathPrefix(std::string path_prefix);
+
+    void log(std::string string);
 
     void start();
     void addRoute(MacRoute *route);
