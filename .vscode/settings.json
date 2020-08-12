@@ -62,6 +62,12 @@
         "utility": "cpp",
         "vector": "cpp",
         "numeric": "cpp",
-        "random": "cpp"
+        "random": "cpp",
+        "*.tcc": "cpp",
+        "clocale": "cpp",
+        "deque": "cpp",
+        "memory_resource": "cpp",
+        "fstream": "cpp",
+        "cinttypes": "cpp"
     }
 }

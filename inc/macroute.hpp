@@ -1,16 +1,15 @@
 
-#ifndef MAC_MACROUTE_H_
-#define MAC_MACROUTE_H_
+#ifndef MAC_ROUTE_H_
+#define MAC_ROUTE_H_
 
-#include <iostream>
+#include <string>
 
 #include "macrequesttype.hpp"
+#include "macrouteinfo.hpp"
 
 class MacRoute {
 
-  struct mg_connection *connection;
-  struct http_message *http_message;
-  std::string request_id;
+  MacRouteInfo route_info;
 
   MacRequestType requestType;
   char* path;
@@ -18,13 +17,14 @@ class MacRoute {
 
 protected:
   void responseTextError(int statusCode, char *text);
-  void responseText(int statusCode, char *text);
-  void responseJson(int statusCode, char *text);
+  void responseText(int statusCode, std::string string);
+  void responseJson(int statusCode, std::string string);
 
   void log(std::string string);
 
   char* getQueryString();
   char* getHeaderValue(const char* paramName);
+  std::string getPathValue(std::string var_name);
 
   std::string getNow();
 
@@ -36,9 +36,9 @@ public:
   std::string getName();
   void setName(std::string name);
 
-  void handle(struct mg_connection *nc, struct http_message *hm);
+  void handle(MacRouteInfo route_info);
   
-  MacRoute(MacRequestType requestType, char* path);
+  MacRoute(MacRequestType request_type, char* path);
   virtual void treat();
 
 };

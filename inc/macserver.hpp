@@ -1,7 +1,7 @@
 
 
-#ifndef MAC_MACSERVER_H_
-#define MAC_MACSERVER_H_
+#ifndef MAC_SERVER_H_
+#define MAC_ERVER_H_
 
 #include <string>
 #include <list> 
@@ -10,7 +10,7 @@
 
 #include "macrequesttype.hpp"
 #include "macroute.hpp"
-
+#include "macrouteinfo.hpp"
 
 class MacServer {
 
@@ -21,7 +21,7 @@ class MacServer {
     int http_port;
     std::string path_prefix;
 
-    MacRoute* findRoute(const MacRequestType requestType, char const *uri);
+    MacRouteInfo findRoute(const MacRequestType requestType, std::string uri);
 
     static MacServer* instance;
     MacServer();
@@ -32,7 +32,7 @@ class MacServer {
 
   public:
     
-    bool handleEvent(struct mg_connection *nc, struct http_message *hm, const MacRequestType requestType, char const *uri);
+    bool handleEvent(struct mg_connection *nc, struct http_message *hm, const MacRequestType requestType, std::string uri);
 
 
     int getHttpPort();

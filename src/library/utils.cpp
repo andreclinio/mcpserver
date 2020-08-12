@@ -2,9 +2,14 @@
 #include <iostream>
 #include <algorithm>
 #include <random>
+#include <chrono>
+#include <map>
+#include <sstream>
+#include <iostream>
 
 extern "C" {
     #include "mongoose.h"
+    #include <string.h>
 }
 
 #include "utils.hpp"
@@ -28,8 +33,10 @@ std::string utils_now() {
 }
 
 std::string utils_mg_str_to_string(const struct mg_str mgstr) {
-    char *buffer = (char*)malloc(mgstr.len);
-    strlcpy(buffer, mgstr.p, mgstr.len+1);
+    auto length = mgstr.len;
+    char *buffer = (char*)malloc(length+1);
+    strncpy(buffer, mgstr.p, length);
+    buffer[length] = '\0';
     std::string string = std::string(buffer);
     free(buffer);
     buffer = NULL;
@@ -38,11 +45,13 @@ std::string utils_mg_str_to_string(const struct mg_str mgstr) {
 
 MacRequestType utils_get_request_type(struct http_message *hm) {
     std::string rtype = utils_mg_str_to_string(hm->method);
-    if (rtype == S_GET) return GET;
-    else if (rtype == S_PUT) return PUT;
-    else if (rtype == S_POST) return POST;
-
-    throw  ("Invalid request type detected!");
+    if (rtype.compare(S_GET) == 0) return GET;
+    else if (rtype.compare(S_PUT) == 0) return PUT;
+    else if (rtype.compare(S_POST) == 0) return POST;
+    else {
+        std::cerr << "Erro interno em utils_get_request_type!" << std::endl;
+        throw  ("Invalid request type detected!");
+    }
 }
 
 std::string utils_generate_uuid_v4() {
@@ -75,4 +84,47 @@ std::string utils_generate_uuid_v4() {
         ss << dis(gen);
     };
     return ss.str();
+}
+
+std::vector<std::string> utils_parse_path(std::string path) {
+    std::string delimiter = "/";
+    std::string part = "";
+    std::size_t firstPos = 0;
+    std::size_t secondPos = 0;
+    std::vector<std::string> parts;
+    while (firstPos != std::string::npos)  {
+        firstPos = path.find(delimiter, firstPos);
+        secondPos = path.find(delimiter, firstPos + 1);
+        part = path.substr(firstPos + 1, (secondPos - 1) - firstPos);
+        if (!part.empty()) parts.push_back(part);
+        firstPos = secondPos;
+    }
+    return parts;
+}
+
+
+bool utils_is_wildcarded_path(std::string route_path) {
+    auto route_vector = utils_parse_path(route_path);
+    for(auto const& route_elem: route_vector) {
+        if (route_elem[0] == ':') return true;
+    }
+    return false;
+}
+
+std::map<std::string,std::string> utils_match_paths(std::string route_path, std::string uri_path) {
+    auto route_vector = utils_parse_path(route_path);
+    auto uri_vector = utils_parse_path(uri_path);
+    std::map<std::string,std::string> result;
+    if (route_vector.size() != uri_vector.size()) return result;
+    for(std::vector<std::string>::size_type u = 0; u != uri_vector.size(); u++) {
+        auto uri_elem = uri_vector[u];
+        auto route_elem = route_vector[u];
+        if (route_elem[0] == ':') {
+            auto var_name = route_elem.substr(1);
+            result[var_name] = uri_elem;
+        }
+        else if (uri_elem.compare(route_elem) == 0) continue;
+        else return result;
+    }
+    return result;
 }

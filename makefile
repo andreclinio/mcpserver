@@ -1,6 +1,6 @@
 
 CCPP = g++
-CPPFLAGS = -I./inc -I./src/library -I./src/library/mongoose
+CPPFLAGS = -I./inc -I./src/library -I./src/library/mongoose -g -rdynamic
 SRC = src
 DEPS = server/server.cpp 
 OBJS = \
@@ -15,7 +15,7 @@ OBJS = \
 	$(CCPP) -c -o $@ $< $(CFLAGS)
 
 server: $(OBJS)
-	$(CCPP) -o $@ $^ $(CFLAGS)
+	$(CCPP) -g -rdynamic -o $@ $^ $(CFLAGS)
 
 clean: 
 	rm -fr $(OBJS)

@@ -1,5 +1,5 @@
-#ifndef MAC_MACREQUESTTYPE_H_
-#define MAC_MACREQUESTTYPE_H_
+#ifndef MAC_REQUESTTYPE_H_
+#define MAC_REQUESTTYPE_H_
 
 enum MacRequestType{
     GET,
