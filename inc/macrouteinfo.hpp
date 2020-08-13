@@ -1,16 +1,16 @@
 
-#ifndef MAC_ROUTEINFO_H_
-#define MAC_ROUTEINFO_H_
+#ifndef MCP_ROUTEINFO_H_
+#define MCP_ROUTEINFO_H_
 
-#include <string>
 #include <map>
+#include <string>
 
 class MacRoute;
 
-struct MacRouteInfo
-{
+struct MacRouteInfo {
     MacRoute *route;
     std::map<std::string, std::string> path_map;
+    std::map<std::string, std::vector<std::string> > query_map;
     struct mg_connection *nc;
     struct http_message *hm;
     std::string request_id;

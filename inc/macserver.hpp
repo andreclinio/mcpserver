@@ -1,39 +1,32 @@
 
 
-#ifndef MAC_SERVER_H_
-#define MAC_ERVER_H_
+#ifndef MCP_SERVER_H_
+#define MCP_SERVER_H_
 
-#include <string>
-#include <list> 
 #include <iostream>
+#include <list>
 #include <sstream>
+#include <string>
 
 #include "macrequesttype.hpp"
 #include "macroute.hpp"
 #include "macrouteinfo.hpp"
 
 class MacServer {
-
-  private:
-
-    std::list<MacRoute*> routes;
+   private:
+    std::list<MacRoute *> routes;
 
     int http_port;
     std::string path_prefix;
 
     MacRouteInfo findRoute(const MacRequestType requestType, std::string uri);
 
-    static MacServer* instance;
+    static MacServer *instance;
     MacServer();
 
-    
-  protected:
-
-
-  public:
-    
+   protected:
+   public:
     bool handleEvent(struct mg_connection *nc, struct http_message *hm, const MacRequestType requestType, std::string uri);
-
 
     int getHttpPort();
     void setHttpPort(int port);
@@ -46,9 +39,7 @@ class MacServer {
     void start();
     void addRoute(MacRoute *route);
 
-    static MacServer* getInstance();
-
+    static MacServer *getInstance();
 };
-
 
 #endif

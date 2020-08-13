@@ -1,10 +1,13 @@
 
 
-#ifndef MAC_UTILS_H_
-#define MAC_UTILS_H_
+#ifndef MCP_UTILS_H_
+#define MCP_UTILS_H_
 
 #include <iostream>
 #include <map>
+#include <sstream>
+#include <string>
+#include <vector>
 
 #include "macrequesttype.hpp"
 
@@ -14,6 +17,7 @@ std::string utils_now();
 std::string utils_generate_uuid_v4();
 
 bool utils_is_wildcarded_path(std::string route_path);
-std::map<std::string,std::string> utils_match_paths(std::string route_path, std::string uri_path);
+std::map<std::string, std::string> utils_match_paths(std::string route_path, std::string uri_path);
+std::map<std::string, std::vector<std::string> > utils_parse_query(std::string query_string);
 
 #endif

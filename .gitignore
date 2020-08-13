@@ -1,2 +1,4 @@
 server
 **/*.o
+bin/*
+obj/**/*.o

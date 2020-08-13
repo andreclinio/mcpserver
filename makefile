@@ -1,21 +1,26 @@
 
 CCPP = g++
-CPPFLAGS = -I./inc -I./src/library -I./src/library/mongoose -g -rdynamic
-SRC = src
-DEPS = server/server.cpp 
+CPPFLAGS = -I./inc -I./src/library -I./src/library/mongoose -g -std=c++11
+SRCDIR = src
+OBJDIR = obj
+BINDIR = bin
+BINNAME = mcpdemo
+ 
 OBJS = \
-  $(SRC)/library/mongoose/mongoose.o \
-  $(SRC)/library/macserver.o \
-  $(SRC)/library/macroute.o \
-  $(SRC)/library/utils.o \
-  $(SRC)/sample/server.o
+  $(OBJDIR)/library/mongoose/mongoose.o \
+  $(OBJDIR)/library/macserver.o \
+  $(OBJDIR)/library/macroute.o \
+  $(OBJDIR)/library/utils.o \
+  $(OBJDIR)/sample/mcpdemo.o
 
-%.o: %.c $(DEPS)
-	echo "Comp $< ...."
-	$(CCPP) -c -o $@ $< $(CFLAGS)
+$(OBJDIR)/%.o: $(SRCDIR)/%.c 
+	$(CCPP) -c -o $@ $< $(CPPFLAGS)
 
-server: $(OBJS)
-	$(CCPP) -g -rdynamic -o $@ $^ $(CFLAGS)
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp 
+	$(CCPP) -c -o $@ $< $(CPPFLAGS)
+
+$(BINDIR)/$(BINNAME): $(OBJS)
+	$(CCPP) $(CPPFLAGS) -o $@ $^ 
 
 clean: 
-	rm -fr $(OBJS)
+	rm -fr $(OBJS) $(BINDIR)/$(BINNAME)

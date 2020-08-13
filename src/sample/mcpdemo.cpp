@@ -18,7 +18,7 @@ public:
     }
     void treat()
     {
-        responseText(200, "Pinged!");
+        responseText(200, "Pinged at " + getNow());
     }
 };
 
@@ -51,9 +51,13 @@ public:
 
     void treat()
     {
-        std::string query_string = getQueryString();
-        log("search for query string: " + query_string);
-        responseText(200, getQueryString());
+        std::vector<std::string> var_values = getQueryValues("var");
+        std::string result = "init ";
+        for( const std::string v : var_values) {
+           log("search for query string: " + v);
+           result = result + v + " ";
+        }
+        responseText(200, result);
     }
 };
 
@@ -66,6 +70,7 @@ public:
     {
         setName("echo:path");
     }
+
 
     void treat()
     {
