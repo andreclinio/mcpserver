@@ -5,10 +5,10 @@
 #include <map>
 #include <string>
 
-class MacRoute;
+class McpRoute;
 
-struct MacRouteInfo {
-    MacRoute *route;
+struct McpRouteInfo {
+    McpRoute *route;
     std::map<std::string, std::string> path_map;
     std::map<std::string, std::vector<std::string> > query_map;
     struct mg_connection *nc;

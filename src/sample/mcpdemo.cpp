@@ -1,94 +1,67 @@
 
 
 #include <chrono>
+#include <functional>
 #include <iostream>
 
-#include "macserver.hpp"
+#include "mcpserver.hpp"
 
-class MyServer : public MacServer
-{
-};
+class MyServer : public McpServer {};
 
-class PingRoute : public MacRoute
-{
-public:
-    PingRoute() : MacRoute(GET, "ping")
-    {
-        setName("ping");
-    }
-    void treat()
-    {
-        responseText(200, "Pinged at " + getNow());
-    }
-};
-
-class TimeRoute : public MacRoute
-{
+class TimeRoute : public McpRoute {
     char buffer[64];
 
-public:
-    TimeRoute() : MacRoute(GET, "time")
-    {
-        setName("time");
-    }
+   public:
+    TimeRoute() : McpRoute("Time", GET, "time") {}
 
-    void treat()
-    {
+    void treat() {
         sprintf(buffer, "{ \"time\" : \"%s\" }\n", getNow().c_str());
         responseJson(200, buffer);
     }
 };
 
-class EchoQueryRoute : public MacRoute
-{
+class EchoQueryRoute : public McpRoute {
     char buffer[64];
 
-public:
-    EchoQueryRoute() : MacRoute(GET, "echo/query")
-    {
-        setName("echo:query");
-    }
+   public:
+    EchoQueryRoute() : McpRoute("Echo Query", GET, "echo/query") {}
 
-    void treat()
-    {
+    void treat() {
         std::vector<std::string> var_values = getQueryValues("var");
         std::string result = "init ";
-        for( const std::string v : var_values) {
-           log("search for query string: " + v);
-           result = result + v + " ";
+        for (const std::string v : var_values) {
+            log("search for query string: " + v);
+            result = result + v + " ";
         }
         responseText(200, result);
     }
 };
 
-class EchoPathRoute : public MacRoute
-{
+class EchoPathRoute : public McpRoute {
     char buffer[64];
 
-public:
-    EchoPathRoute() : MacRoute(GET, "echo/path/:var/dummy")
-    {
-        setName("echo:path");
-    }
+   public:
+    EchoPathRoute() : McpRoute("Echo Path", GET, "echo/path/:var/dummy") {}
 
-
-    void treat()
-    {
+    void treat() {
         auto value = getPathValue(std::string("var"));
-        log("Echoing " + value);
+        log("Echoing path parameter 'var' " + value);
         responseText(200, value);
     }
 };
 
-int main(void)
-{
-    MacServer *server = MacServer::getInstance();
+int main(void) {
+    McpServer* server = McpServer::getInstance();
     server->setHttpPort(8090);
-    server->setPathPrefix("/myserver");
-    server->addRoute(new PingRoute());
+    server->setPathPrefix("myserver");
     server->addRoute(new TimeRoute());
     server->addRoute(new EchoQueryRoute());
     server->addRoute(new EchoPathRoute());
+
+    server->addRoute(McpRoute::create("Ping", GET, "ping", [] (McpRoute* route) {
+        route->responseText(200, "Pinged at: " + route->getNow());
+    }));
+
     server->start();
     return 0;
 }

@@ -3,7 +3,7 @@
 #ifndef MCP_REQUESTTYPE_H_
 #define MCP_REQUESTTYPE_H_
 
-enum MacRequestType {
+enum McpRequestType {
     GET,
     PUT,
     POST,

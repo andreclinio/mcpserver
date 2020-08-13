@@ -8,9 +8,9 @@ BINNAME = mcpdemo
  
 OBJS = \
   $(OBJDIR)/library/mongoose/mongoose.o \
-  $(OBJDIR)/library/macserver.o \
-  $(OBJDIR)/library/macroute.o \
-  $(OBJDIR)/library/utils.o \
+  $(OBJDIR)/library/mcpserver.o \
+  $(OBJDIR)/library/mcproute.o \
+  $(OBJDIR)/library/mcputils.o \
   $(OBJDIR)/sample/mcpdemo.o
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c 

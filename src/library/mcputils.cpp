@@ -12,8 +12,8 @@ extern "C" {
 #include "mongoose.h"
 }
 
-#include "macrequesttype.hpp"
-#include "utils.hpp"
+#include "mcputils.hpp"
+#include "mcprequesttype.hpp"
 
 // ====================================================================================================================
 
@@ -43,7 +43,7 @@ std::string utils_mg_str_to_string(const struct mg_str mgstr) {
     return string;
 }
 
-MacRequestType utils_get_request_type(struct http_message *hm) {
+McpRequestType utils_get_request_type(struct http_message *hm) {
     std::string rtype = utils_mg_str_to_string(hm->method);
     if (rtype.compare(S_GET) == 0)
         return GET;
