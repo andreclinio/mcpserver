@@ -53,7 +53,7 @@ class EchoPathRoute : public McpRoute {
 int main(void) {
     McpServer* server = McpServer::getInstance();
     server->setHttpPort(8090);
-    server->setPathPrefix("myserver");
+    server->setPathPrefix("mcpdemoserver");
     server->addRoute(new TimeRoute());
     server->addRoute(new EchoQueryRoute());
     server->addRoute(new EchoPathRoute());

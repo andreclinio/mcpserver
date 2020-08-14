@@ -1,4 +1,8 @@
-server
-**/*.o
-bin/*
-obj/**/*.o
+
+library/bin/*
+library/obj/**/*.o
+library/lib/*
+samples/mcpdemoserver/obj/**/*.o
+samples/mcpdemoserver/bin/*
+samples/pingserver/obj/**/*.o
+samples/pingserver/bin/*

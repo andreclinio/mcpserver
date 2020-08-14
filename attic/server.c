@@ -1,5 +1,5 @@
-// Copyright (c) 2015 Cesanta Software Limited
-// All rights reserved
+
+// Arquivo copiado do site para referências
 
 #include "mongoose.h"
 
