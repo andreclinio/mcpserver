@@ -5,6 +5,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <functional>
 
 #include "mcprequesttype.hpp"
 #include "mcprouteinfo.hpp"
