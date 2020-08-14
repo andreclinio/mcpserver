@@ -13,6 +13,10 @@ OBJS = \
   $(OBJDIR)/library/mcputils.o \
   $(OBJDIR)/sample/mcpdemo.o
 
+main: setup $(BINDIR)/$(BINNAME)
+
+rebuild: clean main
+
 $(OBJDIR)/%.o: $(SRCDIR)/%.c 
 	$(CCPP) -c -o $@ $< $(CPPFLAGS)
 
@@ -23,4 +27,10 @@ $(BINDIR)/$(BINNAME): $(OBJS)
 	$(CCPP) $(CPPFLAGS) -o $@ $^ 
 
 clean: 
-	rm -fr $(OBJS) $(BINDIR)/$(BINNAME)
+	rm -fr $(OBJDIR) $(BINDIR)
+
+setup:
+	mkdir -p $(OBJDIR)/library 
+	mkdir -p $(OBJDIR)/library/mongoose
+	mkdir -p $(OBJDIR)/sample
+	mkdir -p $(BINDIR)
