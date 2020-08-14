@@ -12,8 +12,8 @@ extern "C" {
 #include "mongoose.h"
 }
 
-#include "mcputils.hpp"
 #include "mcprequesttype.hpp"
+#include "mcputils.hpp"
 
 // ====================================================================================================================
 
@@ -21,6 +21,7 @@ static std::string S_GET = "GET";
 static std::string S_PUT = "PUT";
 static std::string S_POST = "POST";
 static std::string S_DELETE = "DELETE";
+static std::string S_LIST = "LIST";
 
 // ====================================================================================================================
 
@@ -45,13 +46,17 @@ std::string utils_mg_str_to_string(const struct mg_str mgstr) {
 
 McpRequestType utils_get_request_type(struct http_message *hm) {
     std::string rtype = utils_mg_str_to_string(hm->method);
-    if (rtype.compare(S_GET) == 0)
+    if (rtype.compare(S_GET) == 0) {
         return GET;
-    else if (rtype.compare(S_PUT) == 0)
+    } else if (rtype.compare(S_PUT) == 0) {
         return PUT;
-    else if (rtype.compare(S_POST) == 0)
+    } else if (rtype.compare(S_POST) == 0) {
         return POST;
-    else {
+    } else if (rtype.compare(S_DELETE) == 0) {
+        return DELETE;
+    } else if (rtype.compare(S_LIST) == 0) {
+        return LIST;
+    } else {
         std::cerr << "Erro interno em utils_get_request_type!" << std::endl;
         throw("Invalid request type detected!");
     }
