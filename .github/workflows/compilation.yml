@@ -14,4 +14,4 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: clear and make project (make rebuild)
-      run: make rebuild
+      run: make clean build
