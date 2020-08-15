@@ -9,6 +9,8 @@ class MacServerConan(ConanFile):
     author = "André Luiz Clinio (andre.clinio@gmail.com)"
     description = "Micro compiled webserver for C++"
     topics = ("web server", "C++ 11", "http")
+    url = "https://github.com/andreclinio/mcpserver.git"
+    license = "Open Source"
 
     def source(self):
         self.run("git clone https://github.com/andreclinio/mcpserver.git .")

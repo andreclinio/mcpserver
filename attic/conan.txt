@@ -2,4 +2,7 @@ rm -fr tmp
 conan source  . --source-folder=tmp/source
 conan install . --install-folder=tmp/build
 conan build   . --source-folder=tmp/source --build-folder=tmp/build
-conan package . --source-folder=tmp/source --build-folder=tmp/build --package-folder=tmp/package
+conan package . --source-folder=tmp/source --build-folder=tmp/build --package-folder=tmp/
+conan export-pkg . --source-folder=tmp/source --build-folder=tmp/build 
+
+# conan test /Users/clinio/.conan/data/mcpserver/0.0.1/user/channel/package/103f6067a947f366ef91fc1b7da351c588d1827f mcpserver/0.0.1@user/channel
