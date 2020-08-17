@@ -1,4 +1,4 @@
-name: mcp server conan test installation
+name: mcpserver conan test
 
 on:
   push:
