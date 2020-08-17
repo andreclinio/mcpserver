@@ -1,9 +1,12 @@
 from conans import ConanFile
 from conans import tools
+from conans import AutoToolsBuildEnvironment
+import shutil
+
 
 class MacServerConan(ConanFile):
     name = "mcpserver"
-    version = "0.0.1"
+    version = "0.0.2"
     settings = "os", "compiler", "build_type", "arch"
     generators = "make"
     author = "André Luiz Clinio (andre.clinio@gmail.com)"
@@ -11,17 +14,18 @@ class MacServerConan(ConanFile):
     topics = ("web server", "C++ 11", "http")
     url = "https://github.com/andreclinio/mcpserver.git"
     license = "Open Source"
+    exports_sources = ["*.mk", "makefile", "library/makefile", "library/src/*", "library/include/*"]
 
-    def source(self):
-        command = " ".join(["git", "clone", self.url, "."])
-        self.run(command)
-        self._delete_post_cloned()
-        
+
     def build(self):
-        self.run(" ".join(["git", "clone", self.url]))
+        self._git_clone()
         with tools.chdir("mcpserver"):
-            self._delete_post_cloned()
-            self.run(" ".join([self._make_program, "build"]))
+            env_build = AutoToolsBuildEnvironment(self)
+            env_build.make()
+        shutil.move("mcpserver/library/lib", "lib")
+        shutil.move("mcpserver/library/include", "include")
+        shutil.rmtree("mcpserver")
+
 
     def package(self):
         self.copy("*.hpp", dst="include", src="library/include")
@@ -39,7 +43,10 @@ class MacServerConan(ConanFile):
         make_program = tools.unix_path(make_program) if tools.os_info.is_windows else make_program
         return make_program
 
-    def _delete_post_cloned(self):
+    def _git_clone(self):
+        command = " ".join(["git", "clone", self.url])
+        self.run(command)
         delete_dirs = [".git", ".vscode", ".github", "attic", "samples"]
         for dir in delete_dirs:            
             tools.rmdir(dir)
+        
