@@ -1,0 +1,18 @@
+name: mcpserver conan test
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: make conan-install-test
+      run: make conan-install-test
+
