@@ -13,16 +13,15 @@ class MacServerConan(ConanFile):
     license = "Open Source"
 
     def source(self):
-        self.run("git clone https://github.com/andreclinio/mcpserver.git .")
+        command = " ".join(["git", "clone", self.url, "."])
+        self.run(command)
         self._delete_post_cloned()
         
     def build(self):
-        self.run("git clone https://github.com/andreclinio/mcpserver.git")
-        with tools.chdir("mcpserver/library"):
+        self.run(" ".join(["git", "clone", self.url]))
+        with tools.chdir("mcpserver"):
             self._delete_post_cloned()
-            cmds = [self._make_program, "build"]
-            command  = " ".join(cmds)
-            self.run(command)
+            self.run(" ".join([self._make_program, "build"]))
 
     def package(self):
         self.copy("*.hpp", dst="include", src="library/include")
