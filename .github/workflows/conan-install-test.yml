@@ -1,4 +1,4 @@
-name: conan test installation
+name: mcp server conan test installation
 
 on:
   push:
@@ -14,4 +14,5 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: make conan-install-test
+      run: make conan-install-test
 
