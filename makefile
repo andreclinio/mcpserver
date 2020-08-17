@@ -6,6 +6,9 @@ main: build
 	@(echo "> PINGSERVER $@"; cd samples/pingserver ; make $@ ; cd ../..)
 	@(echo "> MCPDEMOSERVER $@"; cd samples/mcpdemoserver ; make $@ ; cd ../..)
 
+build-library:
+	@(echo "> LIBRARY BUILD" && cd library && make clean build && cd ..)
+
 conan-test:
 	rm -fr tmp
 	conan source  . --source-folder=tmp/source
