@@ -18,7 +18,7 @@ def _get_version():
 
 class McpServerConanFile(ConanFile):
     name = "mcpserver"
-    version = "0.0.1"
+    version = "0.0.2-snapshot"
     settings = "os", "compiler", "build_type", "arch"
     generators = "make"
     author = "André Luiz Clinio (andre.clinio@gmail.com)"
