@@ -28,18 +28,18 @@ function main() {
 
    sed -i "s/version = \"\(.*\)\"/version = \"$nextTag\"/1" $conan_file
    sed -i "s/$currVersion/$nextTag/1" $include_file
-   #git add $include_file
-   #git add $conan_file
-   #git commit -m "Commit da versão para a tag $nextTag"
-   #git push 
-   #git tag -a $nextTag -m 'Criação da tag $nextTag'
-   #git push origin $nextTag
+   git add $include_file
+   git add $conan_file
+   git commit -m "Commit da versão para a tag $nextTag"
+   git push 
+   git tag -a $nextTag -m 'Criação da tag $nextTag'
+   git push origin $nextTag
    sed -i "s/$nextTag/$nextVersion/1" $include_file
    sed -i "s/$nextTag/$nextVersion/1" $conan_file
-   #git add $include_file
-   #git add $conan_file
-   #git commit -m "Segundo commit para a próxima versão $nextVersion"
-   #git push 
+   git add $include_file
+   git add $conan_file
+   git commit -m "Segundo commit para a próxima versão $nextVersion"
+   git push 
 }
 
 main
