@@ -3,7 +3,8 @@ tmp/**/*
 library/bin/*
 library/obj/**/*.o
 library/lib/*
-samples/mcpdemoserver/obj/**/*.o
-samples/mcpdemoserver/bin/*
-samples/pingserver/obj/**/*.o
-samples/pingserver/bin/*
+attic/samples/**/obj/*.o
+attic/samples/**/bin/*
+obj/**/*
+lib/**/*
+bin/**/*

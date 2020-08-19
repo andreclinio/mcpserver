@@ -6,6 +6,7 @@ extern "C" {
 #include "mongoose.h"
 }
 
+#include "version.hpp"
 #include "mcputils.hpp"
 #include "mcprequesttype.hpp"
 #include "mcproute.hpp"
@@ -73,6 +74,8 @@ void McpServer::log(std::string text) {
 McpServer::McpServer() {
     this->http_port = 80;
     this->path_prefix = "";
+    log("Creating web server version: " + getVersion());
+
 }
 
 void McpServer::setPathPrefix(std::string prefix) {
@@ -129,6 +132,10 @@ void McpServer::addRoute(McpRoute *route) {
     this->routes.push_front(route);
 }
 
+std::string getVersion() {
+    return std::string(MCP_LIBRARY_VERSION);
+}
+
 bool McpServer::handleEvent(struct mg_connection *nc, struct http_message *hm, McpRequestType requestType, std::string uri) {
     McpRouteInfo route_info;
     try {
@@ -161,6 +168,7 @@ bool McpServer::handleEvent(struct mg_connection *nc, struct http_message *hm, M
 
 void McpServer::start() {
     signal(SIGSEGV, signal_handler);
+
     std::stringstream intro;
     intro << "Starting web server on port " << http_port << " path: " << path_prefix;
     log(intro.str());

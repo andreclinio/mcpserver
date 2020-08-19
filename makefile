@@ -1,20 +1,44 @@
+include ./definitions.mk
 
-main: build
+CPPFLAGS := -I$(INCDIR) -I$(SRCDIR) -I$(SRCDIR)/mongoose $(CPPFLAGS)
+LDFLAGS := -rcs
+LD := ar
 
-%:
-	@(echo "> LIBRARY $@"; cd library ; make $@ ; cd ..)
-	@(echo "> PINGSERVER $@"; cd samples/pingserver ; make $@ ; cd ../..)
-	@(echo "> MCPDEMOSERVER $@"; cd samples/mcpdemoserver ; make $@ ; cd ../..)
+LIBFILE := $(LIBDIR)/$(LIBNAME)
 
-build-library:
-	@(echo "> LIBRARY BUILD" && cd library && make clean build && cd ..)
+OBJS = \
+  $(OBJDIR)/mongoose/mongoose.o \
+  $(OBJDIR)/mcpserver.o \
+  $(OBJDIR)/mcproute.o \
+  $(OBJDIR)/mcputils.o \
 
-conan-install-test:
-	rm -fr tmp
-	conan source  . --source-folder=tmp/source
-	conan install . --install-folder=tmp/build
-	conan build   . --source-folder=tmp/source --build-folder=tmp/build
-	conan package . --source-folder=tmp/source --build-folder=tmp/build --package-folder=tmp/package
+build: echo-version setup extra $(LIBFILE)
 
-conan-install-local: build-library
-	conan export .
+$(LIBFILE): $(OBJS)
+	$(LD) $(LDFLAGS) $@ -o $^ 
+
+extra:
+	mkdir -p $(OBJDIR)/mongoose
+
+echo-version: 
+	@(echo `grep MCP_LIBRARY_VERSION $(INCDIR)/version.hpp | sed "s/.*\"\(.*\)\"/\1/g"`)
+
+
+conan-install-test: echo-version
+	rm -fr $(AUXDIR)
+	conan source  . --source-folder=$(AUXDIR)
+	conan install . --install-folder=$(AUXDIR)
+	conan build   . --source-folder=$(AUXDIR) --build-folder=$(AUXDIR)
+	conan package . --source-folder=$(AUXDIR) --build-folder=$(AUXDIR) --package-folder=$(AUXDIR)/package
+	true rm -fr $(AUXDIR)
+
+conan-install-local: rebuild-library
+	rm -fr $(AUXDIR)
+	conan source  . --source-folder=$(AUXDIR)/source
+	conan install . --install-folder=$(AUXDIR)/build
+	conan build   . --source-folder=$(AUXDIR)/source --build-folder=$(AUXDIR)/build
+	conan package . --source-folder=$(AUXDIR)/source --build-folder=$(AUXDIR)/build --package-folder=$(AUXDIR)/package
+	conan export-pkg . --package-folder=$(AUXDIR)/package
+	rm -fr $(AUXDIR)
+	
+include ./rules.mk

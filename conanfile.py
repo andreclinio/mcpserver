@@ -2,11 +2,19 @@ from conans import ConanFile
 from conans import tools
 from conans import AutoToolsBuildEnvironment
 import shutil
+import re
 
+def _get_version():
+    with open('include/version.hpp', 'r') as f:
+        for line in f:
+            line = line.rstrip() # remove trailing whitespace such as '\n'
+            if (line.startswith("#define MCP_LIBRARY_VERSION")):
+                version = re.findall(r'"([^"]*)"', line)[0]
+                return version
 
-class MacServerConan(ConanFile):
+class McpServerConanFile(ConanFile):
     name = "mcpserver"
-    version = "0.0.2"
+    version = _get_version()
     settings = "os", "compiler", "build_type", "arch"
     generators = "make"
     author = "André Luiz Clinio (andre.clinio@gmail.com)"
@@ -14,21 +22,16 @@ class MacServerConan(ConanFile):
     topics = ("web server", "C++ 11", "http")
     url = "https://github.com/andreclinio/mcpserver.git"
     license = "Open Source"
-    exports_sources = ["*.mk", "makefile", "library/makefile", "library/src/*", "library/include/*"]
+    exports_sources = ["*.mk", "makefile", "src/*", "include/*"]
 
 
     def build(self):
-        self._git_clone()
-        with tools.chdir("mcpserver"):
-            env_build = AutoToolsBuildEnvironment(self)
-            env_build.make()
-        shutil.move("mcpserver/library/lib", "lib")
-        shutil.move("mcpserver/library/include", "include")
-        shutil.rmtree("mcpserver")
-
+        self.output.info("version read from source version.hpp: " + _get_version())
+        env_build = AutoToolsBuildEnvironment(self)
+        env_build.make()
 
     def package(self):
-        self.copy("*.hpp", dst="include", src="library/include")
+        self.copy("*.hpp", dst="include", src="include")
         self.copy("*.lib", dst="lib", keep_path=False)
         self.copy("*.a", dst="lib", keep_path=False)
 

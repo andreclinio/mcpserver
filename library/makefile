@@ -16,7 +16,7 @@ OBJS = \
 build: setup extra $(LIBFILE)
 
 $(LIBFILE): $(OBJS)
-	$(LD) $(LDFLAGS) $@ $^ 
+	$(LD) $(LDFLAGS) $@ -o $^ 
 
 extra:
 	mkdir -p $(OBJDIR)/mongoose

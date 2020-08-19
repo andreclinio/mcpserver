@@ -36,6 +36,7 @@ class McpServer {
     void setPathPrefix(std::string path_prefix);
 
     void log(std::string string);
+    std::string getVersion();
 
     void start();
     void addRoute(McpRoute *route);
