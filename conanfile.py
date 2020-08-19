@@ -3,9 +3,13 @@ from conans import tools
 from conans import AutoToolsBuildEnvironment
 import shutil
 import re
+import os
 
 def _get_version():
-    with open('include/version.hpp', 'r') as f:
+    script_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
+    rel_path = "include/version.hpp"
+    abs_file_path = os.path.join(script_dir, rel_path)
+    with open(abs_file_path, 'r') as f:
         for line in f:
             line = line.rstrip() # remove trailing whitespace such as '\n'
             if (line.startswith("#define MCP_LIBRARY_VERSION")):
@@ -14,7 +18,7 @@ def _get_version():
 
 class McpServerConanFile(ConanFile):
     name = "mcpserver"
-    version = _get_version()
+    version = "0.0.1-snapshot"
     settings = "os", "compiler", "build_type", "arch"
     generators = "make"
     author = "André Luiz Clinio (andre.clinio@gmail.com)"
@@ -22,15 +26,16 @@ class McpServerConanFile(ConanFile):
     topics = ("web server", "C++ 11", "http")
     url = "https://github.com/andreclinio/mcpserver.git"
     license = "Open Source"
-    exports_sources = ["*.mk", "makefile", "src/*", "include/*"]
+    exports_sources = ["*.mk", "makefile", "src/*", "include/*", "conanfile.py"]
 
 
     def build(self):
-        self.output.info("version read from source version.hpp: " + _get_version())
+        self.output.info("Version read from source version.hpp: " + _get_version())
         env_build = AutoToolsBuildEnvironment(self)
         env_build.make()
 
     def package(self):
+        self.copy("conanfile.py", dst=".", src=".")
         self.copy("*.hpp", dst="include", src="include")
         self.copy("*.lib", dst="lib", keep_path=False)
         self.copy("*.a", dst="lib", keep_path=False)

@@ -25,20 +25,20 @@ echo-version:
 
 
 conan-install-test: echo-version
-	rm -fr $(AUXDIR)
+	@(rm -fr $(AUXDIR))
 	conan source  . --source-folder=$(AUXDIR)
 	conan install . --install-folder=$(AUXDIR)
 	conan build   . --source-folder=$(AUXDIR) --build-folder=$(AUXDIR)
 	conan package . --source-folder=$(AUXDIR) --build-folder=$(AUXDIR) --package-folder=$(AUXDIR)/package
-	true rm -fr $(AUXDIR)
+	@(true rm -fr $(AUXDIR))
 
-conan-install-local: rebuild-library
-	rm -fr $(AUXDIR)
-	conan source  . --source-folder=$(AUXDIR)/source
-	conan install . --install-folder=$(AUXDIR)/build
-	conan build   . --source-folder=$(AUXDIR)/source --build-folder=$(AUXDIR)/build
-	conan package . --source-folder=$(AUXDIR)/source --build-folder=$(AUXDIR)/build --package-folder=$(AUXDIR)/package
+conan-install-local: echo-version
+	@(rm -fr $(AUXDIR))
+	conan source  . --source-folder=$(AUXDIR)
+	conan install . --install-folder=$(AUXDIR)
+	conan build   . --source-folder=$(AUXDIR) --build-folder=$(AUXDIR)
+	conan package . --source-folder=$(AUXDIR) --build-folder=$(AUXDIR) 
+	conan package . --source-folder=$(AUXDIR) --build-folder=$(AUXDIR) --package-folder=$(AUXDIR)/package
 	conan export-pkg . --package-folder=$(AUXDIR)/package
-	rm -fr $(AUXDIR)
 	
 include ./rules.mk
