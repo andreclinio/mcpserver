@@ -2,12 +2,21 @@
 
 Soon...
 
+# Using the Library
+
+Soon...
+
+### Examples
+
+Soon...
+
 ## Development HOWTO's
 
 ### Local Build 
 ```
-# clone repository anda build locally
+# clone repository and build locally
 [user@host] git clone https://github.com/andreclinio/mcpserver.git
+[user@host] cd mcpserver
 [user@host] make rebuild
 ...
 yada yada yada
@@ -15,6 +24,11 @@ yada yada yada
 
 # list results
 [user@host] ls include lib
+include:
+mcprequesttype.hpp      mcproute.hpp            mcprouteinfo.hpp        mcpserver.hpp           version.hpp
+
+lib:
+libmcpserver.a
 ``` 
 
 
