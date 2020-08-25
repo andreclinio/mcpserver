@@ -15,7 +15,7 @@ OBJS = \
 build: echo-version setup extra $(LIBFILE)
 
 $(LIBFILE): $(OBJS)
-	$(LD) $(LDFLAGS) $@ -o $^ 
+	$(LD) $(LDFLAGS) $@  $^ 
 
 extra:
 	mkdir -p $(OBJDIR)/mongoose

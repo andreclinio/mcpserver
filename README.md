@@ -4,26 +4,57 @@ Soon...
 
 # Using the Library
 
-Soon...
+Some images and examples are better than full explanations...
+Create project directory
+```
+[user@host:˜] mkdir myproj
+[user@host:˜] cd myproj
+```
 
-### Examples
+Create a conan file (setting up the dependencies). See a simple example below.
+```
+[user@host:~/myproj] vi conanfile.txt
+```
 
-Soon...
+Create a directory to store generated files (no need to include in version control)
+```
+[user@host:~/myproj/] mkdir conan
+[user@host:~/myproj/conan] cd conan
+[user@host:~/myproj/conan] conan install ..
+```
+
+Analyze the the build info makefile that can be included in your makefile
+```
+[user@host:~/myproj/conan] more conanbuildinfo.mak 
+```
+
+
+### Conanfile simplest exmaple
+```
+[requires]
+mcpserver/0.0.2
+
+[generators]
+make
+
+[imports]
+lib, *.lib* -> ./libs # Copies all dylib files from packages lib folder to my "bin" folder
+```
 
 ## Development HOWTO's
 
 ### Local Build 
 ```
 # clone repository and build locally
-[user@host] git clone https://github.com/andreclinio/mcpserver.git
-[user@host] cd mcpserver
-[user@host] make rebuild
+[user@host:˜] git clone https://github.com/andreclinio/mcpserver.git
+[user@host:˜] cd mcpserver
+[user@host:˜/mcpserver] make rebuild
 ...
 yada yada yada
 ...
 
 # list results
-[user@host] ls include lib
+[user@host:~/mcpserver] ls include lib
 include:
 mcprequesttype.hpp      mcproute.hpp            mcprouteinfo.hpp        mcpserver.hpp           version.hpp
 
@@ -34,36 +65,39 @@ libmcpserver.a
 
 ### Version Release 
 ```
-[user@host] git status 
+[user@host:~/mcpserver] git status 
 Your branch is up to date with 'origin/master'.
 
-[user@host] ./release.bash
+[user@host:~/mcpserver] ./release.bash
 <enter the data>
 ...
 yada yada yada
 ...
 ```
 
-### Install for Conan local repository
+### Install library inside Conan local repository
+First, check existing versions
 ```
-# check existing versions
 [user@host] conan search mcpserver
 Existing package recipes:
 mcpserver/0.0.1-snapshot
+```
 
-# remove old versions (if desired)
+If wanted, remove old versions
+```
 [user@host] conan remove mcpserver/0.0.1-snapshot
+```
 
-# build new version locally
-[user@host] git checkout tags/0.0.2
-[user@host] make conan-install-local
-...
-yada yada yada
-...
+For local install, build new version inside source directory. 
+Choose (checkout) a desired tag and use the makefile for installation.
+```
+[user@host:~/mcpserver] git checkout tags/0.0.2
+[user@host:~/mcpserver] make conan-install-local
+```
 
-# check new version
+Check if the new version is correctly installed.
+```
 [user@host] conan search mcpserver
 Existing package recipes:
 mcpserver/0.0.2
-
 ```
